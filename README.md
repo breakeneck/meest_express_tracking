@@ -7,4 +7,4 @@ Just run this command:
 
 param `<language>` can be one of (ua, ru, en)
 
-If you do not have Telegram token and do not know chat_id, please, refer to documentation https://www.npmjs.com/package/telegram-bot-api 
+If you do not have Telegram token and do not know chat_id, please, refer to documentation https://www.npmjs.com/package/telegram-send-message 
