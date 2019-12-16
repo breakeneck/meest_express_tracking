@@ -1,0 +1,24 @@
+{
+  "name": "meest-tracking",
+  "version": "1.0.0",
+  "description": "This tool will send you tracking details directly in your Telegram. Just run this command:",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/breakeneck/meest_express_tracking.git"
+  },
+  "author": "Yuri Datsenko",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/breakeneck/meest_express_tracking/issues"
+  },
+  "homepage": "https://github.com/breakeneck/meest_express_tracking#readme",
+  "dependencies": {
+    "axios": "^0.19.0",
+    "node-xml2js-promise": "^1.1.1",
+    "telegram-bot-api": "^1.3.3"
+  }
+}

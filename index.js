@@ -1,13 +1,13 @@
 const axios = require('axios');
 const xml2js = require('node-xml2js-promise');
 const telegram = require('telegram-bot-api');
+
 const fs = require('fs').promises;
 const fileExists = async path => !!(await require('fs').promises.stat(path).catch(e => false));
 
 const BASE_URL = 'https://t.meest-group.com';
 const CACHE_FILENAME = './cache.json';
 const NO_DATA_MSG = 'Tracking info is absent';
-const NO_UPDATES_MSG = 'No new tracking events';
 
 let isNewMessageExists = 0;
 
@@ -22,28 +22,25 @@ async function getMessage(items) {
     if (!items.length) {
         return NO_DATA_MSG;
     }
-
-    let cachedMessages = await fileExists(CACHE_FILENAME) ? JSON.parse(await fs.readFileSync(CACHE_FILENAME)) : {};
-    let message = items.map(
+    return items.map(
         item => `${item.DateTimeAction} | ${item.Country} (${item.City}) | ${item.ActionMessages}`
     ).join("\n");
-
-    // Update cache if message changed
-    if (!cachedMessages[trackNumber] || cachedMessages[trackNumber] != message) {
-        cachedMessages[trackNumber] = message;
-        await fs.writeFile(CACHE_FILENAME, JSON.stringify(cachedMessages));
-        isNewMessageExists = 1;
-        return message;
-    }
-
-    return NO_UPDATES_MSG;
 }
 
-const printResult = async function (items) {
+async function isMessageChanged(message) {
+    let cachedMessages = await fileExists(CACHE_FILENAME) ? JSON.parse(await fs.readFile(CACHE_FILENAME)) : {};
+    let newMessages = Object.assign({}, cachedMessages);
+    newMessages[trackNumber] = message;
+    await fs.writeFile(CACHE_FILENAME, JSON.stringify(newMessages));
+
+    return cachedMessages[trackNumber] != message;
+}
+
+async function printResult(items) {
     let message = await getMessage(items);
 
     if (telegramToken && telegramChatId) {
-        if (isNewMessageExists) {
+        if (await isMessageChanged(message)) {
             new telegram({
                 token: telegramToken
             }).sendMessage({chat_id: telegramChatId, text: message});
@@ -51,7 +48,7 @@ const printResult = async function (items) {
     } else {
         console.log(message);
     }
-};
+}
 
 (async () => {
     const pageResponse = await axios.get(`${BASE_URL}/${lang}`);
